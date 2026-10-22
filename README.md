@@ -16,6 +16,7 @@ Classify samples in scikit-learn's copy of the UCI Wine dataset into one of thre
 - Holdout accuracy and five-fold cross-validation
 - Per-class precision, recall, and F1 scores
 - Confusion-matrix error analysis
+- Training-only hyperparameter selection
 - Reproducible dependencies and Git history
 
 ## Approach
@@ -24,7 +25,9 @@ Classify samples in scikit-learn's copy of the UCI Wine dataset into one of thre
 2. Reserve 30 percent of the data as an untouched stratified test set.
 3. Fit a five-neighbor KNN baseline on the raw feature values.
 4. Fit a second five-neighbor KNN model behind `StandardScaler` in one pipeline.
-5. Compare holdout accuracy, inspect five-fold cross-validation, and review per-class errors.
+5. Compare holdout accuracy and inspect the fixed-model comparison.
+6. Use five-fold cross-validation on the training split only to compare neighbor counts 1, 3, 5, 7, 9, and 11.
+7. Fit the selected scaled pipeline on all training data and evaluate it once on the untouched test set.
 
 ## Run locally on Windows
 
@@ -34,11 +37,15 @@ Create and select the `.venv` environment described by the project guide, then r
 python train.py
 ```
 
-The script prints the observed metrics and opens a confusion matrix. The scores are computed at runtime rather than hard-coded into this README.
+The script prints observed metrics, training-only neighbor-search results, and the tuned holdout evaluation, then opens a confusion matrix. Scores are computed at runtime rather than hard-coded into this README.
 
 ## Why the scaled pipeline is the defensible model
 
 KNN uses distances between samples. When feature ranges differ substantially, large-magnitude features can dominate those distances. `StandardScaler` puts features on comparable scales, while the pipeline keeps scaling attached to each model fit instead of preprocessing the entire dataset in advance.
+
+## Tuning without test-set leakage
+
+The neighbor count is selected from a small candidate list by five-fold cross-validation using only the training split. The test set is not used to select `n_neighbors`; it is evaluated once after the selection is complete.
 
 ## Interview talking points
 
@@ -47,7 +54,4 @@ KNN uses distances between samples. When feature ranges differ substantially, la
 - Why preprocessing belongs inside a pipeline
 - What accuracy hides and what the classification report reveals
 - Why cross-validation is more persuasive than one split alone
-
-## Next experiment
-
-Tune the neighbor count with cross-validation on the training split, then evaluate the selected pipeline once on the untouched test set.
+- Why hyperparameters must be selected without consulting holdout performance
