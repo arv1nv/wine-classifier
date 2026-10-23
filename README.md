@@ -47,11 +47,3 @@ KNN uses distances between samples. When feature ranges differ substantially, la
 
 The neighbor count is selected from a small candidate list by five-fold cross-validation using only the training split. The test set is not used to select `n_neighbors`; it is evaluated once after the selection is complete.
 
-## Interview talking points
-
-- Why a baseline should come before optimization
-- Why the test set stays untouched until final evaluation
-- Why preprocessing belongs inside a pipeline
-- What accuracy hides and what the classification report reveals
-- Why cross-validation is more persuasive than one split alone
-- Why hyperparameters must be selected without consulting holdout performance
